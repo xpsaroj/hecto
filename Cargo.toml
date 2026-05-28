@@ -2,6 +2,9 @@
 name = "hecto"
 version = "0.1.0"
 edition = "2024"
+description = "A simple text editor written in Rust"
+repository = "https://github.com/xpsaroj/hecto"
+readme = "README.md"
 
 [dependencies]
 crossterm = "0.29.0"
