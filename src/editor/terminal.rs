@@ -3,10 +3,9 @@ use crossterm::style::Print;
 use crossterm::terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode, size};
 use crossterm::{Command, queue};
 
-use core::fmt::Display;
 use std::io::{Error, Write, stdout};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct Size {
     pub height: usize,
     pub width: usize,
