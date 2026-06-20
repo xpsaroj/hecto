@@ -1,6 +1,6 @@
+mod buffer;
 mod terminal;
 mod view;
-mod buffer;
 
 use core::cmp::min;
 use crossterm::event::{
@@ -8,12 +8,9 @@ use crossterm::event::{
     KeyCode, KeyEvent, KeyEventKind, KeyModifiers, read,
 };
 
-use std::io::Error;
+use std::{env, io::Error};
 use terminal::{Position, Size, Terminal};
 use view::View;
-
-const NAME: &str = env!("CARGO_PKG_NAME");
-const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Clone, Copy, Default)]
 struct Location {
@@ -31,6 +28,7 @@ pub struct Editor {
 impl Editor {
     pub fn run(&mut self) {
         Terminal::initialize().unwrap();
+        self.handle_args();
         let result = self.repl();
         Terminal::terminate().unwrap();
         result.unwrap();
@@ -47,6 +45,13 @@ impl Editor {
         }
 
         Ok(())
+    }
+
+    fn handle_args(&mut self) {
+        let args: Vec<String> = env::args().collect();
+        if let Some(file_name) = args.get(1) {
+            self.view.load(file_name);
+        }
     }
 
     fn move_point(&mut self, key_code: KeyCode) -> Result<(), Error> {
