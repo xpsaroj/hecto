@@ -1,6 +1,9 @@
 use crossterm::cursor::{Hide, MoveTo, Show};
 use crossterm::style::Print;
-use crossterm::terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode, size};
+use crossterm::terminal::{
+    Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode,
+    enable_raw_mode, size,
+};
 use crossterm::{Command, queue};
 
 use std::io::{Error, Write, stdout};
@@ -18,9 +21,9 @@ pub struct Position {
 }
 
 /// Represents the Terminal.
-/// 
+///
 /// Edge Case for platforms where `usize`  < `u16`:
-/// 
+///
 /// Regardless of the actual size of the Terminal, this representation
 /// only spans over at most `usize::MAX` or `u16::size` rows/columns, whichever is smaller
 ///
@@ -31,13 +34,24 @@ pub struct Terminal {}
 impl Terminal {
     pub fn initialize() -> Result<(), Error> {
         enable_raw_mode()?;
+        Self::enter_alternate_screen()?;
         Self::clear_screen()?;
         Self::execute()
     }
 
     pub fn terminate() -> Result<(), Error> {
+        Self::leave_alternate_screen()?;
+        Self::show_caret()?;
         Self::execute()?;
         disable_raw_mode()
+    }
+
+    pub fn enter_alternate_screen() -> Result<(), Error> {
+        Self::queue_command(EnterAlternateScreen)
+    }
+
+    pub fn leave_alternate_screen() -> Result<(), Error> {
+        Self::queue_command(LeaveAlternateScreen)
     }
 
     pub fn clear_screen() -> Result<(), Error> {
@@ -64,6 +78,12 @@ impl Terminal {
 
     pub fn print(string: &str) -> Result<(), Error> {
         Self::queue_command(Print(string))
+    }
+
+    pub fn print_row(row: usize, line_text: &str) -> Result<(), Error> {
+        Self::move_caret_to(Position { col: 0, row })?;
+        Self::clear_line()?;
+        Self::print(line_text)
     }
 
     pub fn size() -> Result<Size, Error> {
