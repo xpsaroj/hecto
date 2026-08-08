@@ -97,7 +97,7 @@ impl Editor {
 
         // let _ = to ignore the Result that must be used.
         let _ = self.view.render();
-        let _ = Terminal::move_caret_to(self.view.get_position());
+        let _ = Terminal::move_caret_to(self.view.caret_position());
 
         let _ = Terminal::show_caret();
         let _ = Terminal::execute();
