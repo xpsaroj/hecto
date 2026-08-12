@@ -19,6 +19,8 @@ pub enum EditorCommand {
     Resize(Size),
     Quit,
     Insert(char),
+    Backspace,
+    Delete,
 }
 
 impl TryFrom<Event> for EditorCommand {
@@ -34,7 +36,10 @@ impl TryFrom<Event> for EditorCommand {
                 (KeyCode::Char(character), KeyModifiers::NONE | KeyModifiers::SHIFT) => {
                     Ok(Self::Insert(character))
                 }
-                // movement
+                // for deletion
+                (KeyCode::Backspace, _) => Ok(Self::Backspace),
+                (KeyCode::Delete, _) => Ok(Self::Delete),
+                // for movement
                 (KeyCode::Up, _) => Ok(Self::Move(Direction::Up)),
                 (KeyCode::Down, _) => Ok(Self::Move(Direction::Down)),
                 (KeyCode::Left, _) => Ok(Self::Move(Direction::Left)),

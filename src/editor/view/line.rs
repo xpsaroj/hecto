@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{ops::Range, result};
 use unicode_segmentation::UnicodeSegmentation;
 use unicode_width::UnicodeWidthStr;
 
@@ -140,6 +140,19 @@ impl Line {
         // If at the end of line, just add the char
         if grapheme_index >= self.fragments.len() {
             result.push(character);
+        }
+
+        self.fragments = Self::str_to_fragments(&result);
+    }
+
+    pub fn delete(&mut self, grapheme_index: usize) {
+        let mut result = String::new();
+
+        // skip the one at the index, add everything else
+        for (index, fragment) in self.fragments.iter().enumerate() {
+            if index != grapheme_index {
+                result.push_str(&fragment.grapheme);
+            }
         }
 
         self.fragments = Self::str_to_fragments(&result);

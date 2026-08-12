@@ -40,6 +40,8 @@ impl View {
             EditorCommand::Resize(size) => self.resize(size),
             EditorCommand::Quit => {}
             EditorCommand::Insert(character) => self.insert_char(character),
+            EditorCommand::Backspace => self.backspace(),
+            EditorCommand::Delete => self.delete(),
         }
     }
 
@@ -71,6 +73,16 @@ impl View {
             self.move_right();
         }
 
+        self.needs_redraw = true;
+    }
+
+    fn backspace(&mut self) {
+        self.move_left();
+        self.delete();
+    }
+
+    fn delete(&mut self) {
+        self.buffer.delete(self.text_location);
         self.needs_redraw = true;
     }
 
@@ -228,7 +240,8 @@ impl View {
     fn move_left(&mut self) {
         if self.text_location.grapheme_index > 0 {
             self.text_location.grapheme_index -= 1;
-        } else {
+        } else if self.text_location.line_index > 0 {
+            // if no check on line index, when on first line, moves the caret to end of first line
             self.move_up(1);
             self.move_to_end_of_line();
         }
