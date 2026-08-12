@@ -76,12 +76,8 @@ impl Editor {
                         self.view.handle_command(command);
                     }
                 }
-                Err(err) => {
-                    #[cfg(debug_assertions)]
-                    {
-                        panic!("Could not handle command: {err}");
-                    }
-                }
+                // don't crash
+                Err(_) => {}
             }
         } else {
             #[cfg(debug_assertions)]
