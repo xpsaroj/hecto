@@ -41,8 +41,18 @@ impl Buffer {
     }
 
     pub fn delete(&mut self, at: Location) {
-        if let Some(line) = self.lines.get_mut(at.line_index) {
-            line.delete(at.grapheme_index);
+        if let Some(line) = self.lines.get(at.line_index) {
+            // if at the end of one line and next line exists, on delete, append the line below it to this one. else just do a normal delete
+            if at.grapheme_index >= line.grapheme_count()
+                && self.lines.len() > at.line_index.saturating_add(1)
+            {
+                let next_line = self.lines.remove(at.line_index.saturating_add(1));
+
+                // this line exists cause of that outer if let check
+                self.lines[at.line_index].append(&next_line);
+            } else if at.grapheme_index < line.grapheme_count() {
+                self.lines[at.line_index].delete(at.grapheme_index);
+            }
         }
     }
 }

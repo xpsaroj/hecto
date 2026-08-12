@@ -70,15 +70,18 @@ impl View {
         let grapheme_delta = new_len.saturating_sub(old_len);
         if grapheme_delta > 0 {
             // move right for and added grapheme
-            self.move_right();
+            self.move_text_location(&Direction::Right); // move_right() doesn't handle scrolling, so move_text_location
         }
 
         self.needs_redraw = true;
     }
 
     fn backspace(&mut self) {
-        self.move_left();
-        self.delete();
+        // do nothing if at the start of first line
+        if self.text_location.line_index != 0 || self.text_location.grapheme_index != 0 {
+            self.move_text_location(&Direction::Left); // move_left() doesn't handle scrolling, so move_text_location()
+            self.delete();
+        }
     }
 
     fn delete(&mut self) {
