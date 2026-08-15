@@ -22,6 +22,7 @@ pub enum EditorCommand {
     Backspace,
     Delete,
     Enter,
+    Save,
 }
 
 impl TryFrom<Event> for EditorCommand {
@@ -44,6 +45,8 @@ impl TryFrom<Event> for EditorCommand {
                 (KeyCode::Tab, _) => Ok(Self::Insert('\t')),
                 // enter (new line)
                 (KeyCode::Enter, _) => Ok(Self::Enter),
+                // save file
+                (KeyCode::Char('s'), KeyModifiers::CONTROL) => Ok(Self::Save),
                 // for movement
                 (KeyCode::Up, _) => Ok(Self::Move(Direction::Up)),
                 (KeyCode::Down, _) => Ok(Self::Move(Direction::Down)),

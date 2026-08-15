@@ -43,6 +43,7 @@ impl View {
             EditorCommand::Backspace => self.delete_backward(),
             EditorCommand::Delete => self.delete(),
             EditorCommand::Enter => self.insert_newline(),
+            EditorCommand::Save => self.save(),
         }
     }
 
@@ -50,6 +51,10 @@ impl View {
         self.size = to;
         self.scroll_text_location_into_view();
         self.needs_redraw = true;
+    }
+
+    fn save(&self) {
+        let _ = self.buffer.save();
     }
 
     // Text editing
